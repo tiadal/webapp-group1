@@ -413,14 +413,25 @@ Movie.retrieveAll = function () {
     alert( "Error when reading from Local Storage\n" + e);
   }
   for (let key of Object.keys( movies)) {
+      console.log(movies[key]);
+      let movieId = movies[key].movieId,
+      title = movies[key].title,
+      releaseDate = movies[key].releaseDate,
+      movieRating = movies[key].movieRating,
+      movieGenre = movies[key].movieGenre,
+      director = movies[key].director,
+      actors = movies[key].actors,
+      actorsIdRefs = movies[key].actorsIdRefs;
+      console.log(actors);
+      console.log(actorsIdRefs);
       Movie.instances[key] = new Movie( {
-        movieId: 3,
-        title: "Dangerous Liaisons",
-        releaseDate: "1988-12-16",
-        movieRating: MovieRatingEL.PG,
-        movieGenre: [GenreEL.ACTION, GenreEL.ADVENTURE, GenreEL.FANTASY, GenreEL.SCIFI],
-        directorIdRef: 1,
-        actorIdRefs: [9, 5]
+        movieId: movieId,
+        title: title,
+        releaseDate: releaseDate,
+        movieRating: movieRating,
+        movieGenre: movieGenre,
+        director: director,
+        actorIdRefs: actorsIdRefs
     });  // WATCH OUT THIS LINE!!! 
       // Movie.instances[movieId] = movies[movieId];
   }
