@@ -96,7 +96,7 @@ html, body {
     margin: 0;
     /* style */
     font-family: 'Roboto', sans-serif;
-    background-color:lavender;
+    background-color:#1e3868;
 }
 
 .content > h1 {
@@ -115,7 +115,7 @@ header {
     height: 3rem;
     width: 100%;
     /* style */
-    background-color:lavender;
+    background-color:#1e3868;
     border-bottom: 2px solid #020202;
 }
 
@@ -138,7 +138,7 @@ nav > a {
     vertical-align: top;
     /* style */
     font-size: 1.5rem;
-    color: black;
+    color: white;
     text-decoration: none;
 }
 
@@ -164,7 +164,7 @@ nav > ul > li > a {
     vertical-align: top;
     /* style */
     font-size: 1.5rem;
-    color: black;
+    color: white;
     text-decoration: none;
 }
 
@@ -181,7 +181,13 @@ main > .content {
     /* position */
     grid-column-start: 1;
     grid-column-end: 2;
+    padding: 0rem 1rem 0 0rem;
     /* style */
+    position:absolute;
+    background-color: #f5f5f5;
+    padding:1rem;
+    border-radius: 4px;
+}
 }
 
 main > .sideMenu {
@@ -191,11 +197,23 @@ main > .sideMenu {
     /* style */
 }
 
+.menu {
+    list-style-type: none;
+    position: fixed;
+    bottom: 1rem;
+    flex-direction:row ;
+    display: flex;
+    justify-content: space-around;
+    z-index: 10;
+    width:100%;
+    left: 0;
+}
+
 footer {
     /* position */
     position: relative;
     bottom: 0;
-    height: 2rem;
+    height: 6rem;
     width: 100%;
     padding: 0.5rem 0 0 0;
     /* style */
@@ -425,6 +443,15 @@ form div.MultiChoiceWidget > ul > li.added {
     color: green;
 }
 
+.buttonIcon {
+    margin: 0.5rem 0 0 0;
+}
+
+.buttonMenu {
+    width: 80px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+}
 
 @media only screen and (min-width: 768px) {
     .noneBig {
@@ -452,12 +479,17 @@ form div.MultiChoiceWidget > ul > li.added {
         /* position */
         position: fixed;
         bottom: 0;
+        height:2rem;
     }
     main > .content {
         /* position */
         grid-column-start: 2;
         grid-column-end: 4;
         /* style */
+        position:initial;
+        background-color: #f5f5f5;
+        padding:1rem;
+        border-radius: 4px;
     }
     
     main > .sideMenu {
@@ -466,8 +498,21 @@ form div.MultiChoiceWidget > ul > li.added {
         grid-column-end: 2;
         /* style */
     }
-
     .menu {
         list-style-type: none;
+        position: relative;
+        bottom: unset;
+        left: unset;
+        display: block;
+        justify-content: unset;
+        flex-direction:unset ;
+        z-index: 1;
     }
+    .buttonMenu {
+        width: 50%;
+        background-color: #f5f5f5;
+        border-radius: 4px;
+        margin: 0 0 1rem 0;
+    }
+    
 }
