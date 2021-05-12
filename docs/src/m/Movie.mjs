@@ -96,7 +96,8 @@ class Movie {
   static checkReleaseDate( releaseDate) {
     var minDate = new Date(1895, 12, 28);
     if (!releaseDate) {
-      return new NoConstraintViolation();
+      return new MandatoryValueConstraintViolation( 
+        "The Releasedate must not be empty!");
     } else {
       var checkReleaseDate = new Date(releaseDate);
       if (checkReleaseDate < minDate) {
@@ -413,17 +414,13 @@ Movie.retrieveAll = function () {
     alert( "Error when reading from Local Storage\n" + e);
   }
   for (let key of Object.keys( movies)) {
-      console.log(movies[key]);
       let movieId = movies[key].movieId,
       title = movies[key].title,
       releaseDate = movies[key].releaseDate,
       movieRating = movies[key].movieRating,
       movieGenre = movies[key].movieGenre,
       director = movies[key].director,
-      actors = movies[key].actors,
       actorsIdRefs = movies[key].actorsIdRefs;
-      console.log(actors);
-      console.log(actorsIdRefs);
       Movie.instances[key] = new Movie( {
         movieId: movieId,
         title: title,

@@ -9,6 +9,7 @@ import { fillSelectWithOptions } from "../../lib/util.mjs";
  Load data
  ***************************************************************/
 Person.retrieveAll();
+Movie.retrieveAll();
 
 /***************************************************************
  Set up general, use-case-independent UI elements
@@ -109,6 +110,10 @@ document.getElementById("update")
     updateFormEl.reset();
   });
 selectUpdatePersonEl.addEventListener("change", handlePersonSelectChangeEvent);
+updateFormEl.name.addEventListener("input", function () {
+  updateFormEl.name.setCustomValidity(
+      Person.checkName( updateFormEl.name.value).message);
+});
 
 // handle Save button click events
 updateFormEl["commit"].addEventListener("click", function () {

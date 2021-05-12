@@ -257,13 +257,13 @@ li {
 li > a {
     /* style */
     text-decoration: none;
-    color: black;
+    color: white;
 }
 
 li > a:link {
     /* style */
     text-decoration: none;
-    color: black;
+    color: white;
 }
 
 li > a:visited {
