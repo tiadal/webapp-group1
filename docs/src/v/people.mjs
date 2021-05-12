@@ -44,6 +44,7 @@ document.getElementById("retrieveAndListAll")
       row.insertCell().textContent = person.personId;
       row.insertCell().textContent = person.name;
     }
+    document.getElementById("Person-M").style.display = "none";
     document.getElementById("Person-R").style.display = "block";
     document.getElementById("Person-C").style.display = "none";
     document.getElementById("Person-U").style.display = "none";
@@ -56,6 +57,7 @@ document.getElementById("retrieveAndListAll")
 const createFormEl = document.querySelector("section#Person-C > form");
 document.getElementById("create")
   .addEventListener("click", function () {
+    document.getElementById("Person-M").style.display = "none";
     document.getElementById("Person-R").style.display = "none";
     document.getElementById("Person-C").style.display = "block";
     document.getElementById("Person-U").style.display = "none";
@@ -96,6 +98,7 @@ const updateFormEl = document.querySelector("section#Person-U > form");
 const selectUpdatePersonEl = updateFormEl.selectPerson;
 document.getElementById("update")
   .addEventListener("click", function () {
+    document.getElementById("Person-M").style.display = "none";
     document.getElementById("Person-R").style.display = "none";
     document.getElementById("Person-C").style.display = "none";
     document.getElementById("Person-U").style.display = "block";
@@ -148,6 +151,7 @@ const deleteFormEl = document.querySelector("section#Person-D > form");
 const selectDeletePersonEl = deleteFormEl.selectPerson;
 document.getElementById("destroy")
   .addEventListener("click", function () {
+    document.getElementById("Person-M").style.display = "none";
     document.getElementById("Person-R").style.display = "none";
     document.getElementById("Person-C").style.display = "none";
     document.getElementById("Person-U").style.display = "none";
@@ -172,6 +176,7 @@ deleteFormEl["commit"].addEventListener("click", function () {
  **********************************************/
 function refreshManageDataUI() {
   // show the manage author UI and hide the other UIs
+  document.getElementById("Person-M").style.display = "block";
   document.getElementById("Person-R").style.display = "none";
   document.getElementById("Person-C").style.display = "none";
   document.getElementById("Person-U").style.display = "none";
