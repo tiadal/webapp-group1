@@ -226,8 +226,6 @@ updateFormEl.commit.addEventListener("click", function () {
     director: updateFormEl.selectDirector.value,
   };
   // check all input fields and show error messages
-  updateFormEl.movieId.setCustomValidity(Movie.checkMovieIdAsId(slots.movieId).message);
-  updateFormEl.movieId.reportValidity();
   updateFormEl.title.setCustomValidity(Movie.checkTitle(slots.movieId).message);
   updateFormEl.title.reportValidity();
   updateFormEl.releaseDate.setCustomValidity(Movie.checkReleaseDate(slots.releaseDate).message);

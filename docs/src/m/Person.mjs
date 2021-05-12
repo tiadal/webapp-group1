@@ -143,10 +143,31 @@ Person.update = function ({personId, name}) {
 
 Person.destroy = function ( personId) {
     const person = Person.instances[personId];
-    for (const movieId of Object.keys( Movie.instances)) {
-        const movie = Movie.instances[movieId];
-        if (movie.actors[personId]) delete movie.actors[personId];// !!! to check and implement
-    }
+    for (const key of Object.keys( Movie.instances)) {
+        const movie = Movie.instances[key];
+        let movieId = movie.movieId;
+        // case if actor
+        let actIds = movie.actors;
+        var actIdArray = []
+        console.log(actIds);
+        for (const key of Object.keys( actIds)) {
+          actIdArray.push(key);
+        }
+        if (actIdArray.includes(personId)) {
+          delete Movie.instances[movieId];
+          // Movie.instances[movieId].actors = [];
+          // Movie.instances[movieId].actorIdRefs = [];
+          // console.log( `Actors of Movie ${movie.movieId} changed.`);
+          console.log( `Movie ${movie.movieId} deleted.`);
+        }
+        // case if director
+        let dirId = String(movie.director.personId);
+        if (dirId === personId && movieId) {
+          delete Movie.instances[movieId];
+          console.log( `Movie ${movie.movieId} deleted.`);
+        }
+    };
+    console.log(actIdArray);
     delete Person.instances[personId];
     console.log( `Person ${person.name} deleted.`);
 }

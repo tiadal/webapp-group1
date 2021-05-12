@@ -16,7 +16,7 @@ Movie.retrieveAll();
  ***************************************************************/
 // set up back-to-menu buttons for all use cases
 for (let btn of document.querySelectorAll("button.back-to-menu")) {
-  btn.addEventListener('click', function () {refreshManageDataUI();});
+  btn.addEventListener('click', function () { refreshManageDataUI(); });
 }
 // neutralize the submit event for all use cases
 for (let frm of document.querySelectorAll("section > form")) {
@@ -28,6 +28,7 @@ for (let frm of document.querySelectorAll("section > form")) {
 // save data when leaving the page
 window.addEventListener("beforeunload", function () {
   Person.saveAll();
+  Movie.saveAll();
 });
 
 /**********************************************
@@ -39,7 +40,7 @@ document.getElementById("retrieveAndListAll")
   .addEventListener("click", function () {
     const tableBodyEl = document.querySelector("section#Person-R > table > tbody");
     tableBodyEl.innerHTML = "";
-    for (let key of Object.keys( Person.instances)) {
+    for (let key of Object.keys(Person.instances)) {
       const person = Person.instances[key];
       const row = tableBodyEl.insertRow();
       row.insertCell().textContent = person.personId;
@@ -68,11 +69,11 @@ document.getElementById("create")
 // set up event handlers for responsive constraint validation
 createFormEl.personId.addEventListener("input", function () {
   createFormEl.personId.setCustomValidity(
-      Person.checkPersonAsId( createFormEl.personId.value).message);
+    Person.checkPersonAsId(createFormEl.personId.value).message);
 });
 createFormEl.name.addEventListener("input", function () {
   createFormEl.name.setCustomValidity(
-      Person.checkName( createFormEl.name.value).message);
+    Person.checkName(createFormEl.name.value).message);
 });
 /* SIMPLIFIED CODE: no responsive validation of name */
 
@@ -84,12 +85,12 @@ createFormEl["commit"].addEventListener("click", function () {
   };
   // check all input fields and show error messages
   createFormEl.personId.setCustomValidity(
-      Person.checkPersonAsId( slots.personId).message);
+    Person.checkPersonAsId(slots.personId).message);
   createFormEl.name.setCustomValidity(
-    Person.checkName( slots.name).message);
+    Person.checkName(slots.name).message);
   /* SIMPLIFIED CODE: no before-submit validation of name */
   // save the input data only if all form fields are valid
-  if (createFormEl.checkValidity()) Person.add( slots);
+  if (createFormEl.checkValidity()) Person.add(slots);
 });
 
 /**********************************************
@@ -105,14 +106,14 @@ document.getElementById("update")
     document.getElementById("Person-U").style.display = "block";
     document.getElementById("Person-D").style.display = "none";
     // set up the author selection list
-    fillSelectWithOptions( selectUpdatePersonEl, Person.instances,
-      "personId", {displayProp:"name"});
+    fillSelectWithOptions(selectUpdatePersonEl, Person.instances,
+      "personId", { displayProp: "name" });
     updateFormEl.reset();
   });
 selectUpdatePersonEl.addEventListener("change", handlePersonSelectChangeEvent);
 updateFormEl.name.addEventListener("input", function () {
   updateFormEl.name.setCustomValidity(
-      Person.checkName( updateFormEl.name.value).message);
+    Person.checkName(updateFormEl.name.value).message);
 });
 
 // handle Save button click events
@@ -125,10 +126,10 @@ updateFormEl["commit"].addEventListener("click", function () {
   }
   // check all property constraints
   updateFormEl.name.setCustomValidity(
-    Person.checkName( slots.name).message);
+    Person.checkName(slots.name).message);
   // save the input data only if all of the form fields are valid
   if (selectUpdatePersonEl.checkValidity()) {
-    Person.update( slots);
+    Person.update(slots);
     // update the author selection list's option element
     selectUpdatePersonEl.options[selectUpdatePersonEl.selectedIndex].text = slots.name;
   }
@@ -137,7 +138,7 @@ updateFormEl["commit"].addEventListener("click", function () {
  * handle person selection events
  * when a person is selected, populate the form with the data of the selected person
  */
-function handlePersonSelectChangeEvent () {
+function handlePersonSelectChangeEvent() {
   var key = "", auth = null;
   key = updateFormEl.selectPerson.value;
   if (key) {
@@ -162,8 +163,8 @@ document.getElementById("destroy")
     document.getElementById("Person-U").style.display = "none";
     document.getElementById("Person-D").style.display = "block";
     // set up the author selection list
-    fillSelectWithOptions( selectDeletePersonEl, Person.instances,
-      "personId", {displayProp:"name"});
+    fillSelectWithOptions(selectDeletePersonEl, Person.instances,
+      "personId", { displayProp: "name" });
     deleteFormEl.reset();
   });
 // handle Delete button click events
@@ -174,6 +175,8 @@ deleteFormEl["commit"].addEventListener("click", function () {
     Person.destroy( personIdRef);
     selectDeletePersonEl.remove( deleteFormEl.selectPerson.selectedIndex);
   }
+
+
 });
 
 /**********************************************
