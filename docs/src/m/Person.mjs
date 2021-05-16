@@ -149,16 +149,15 @@ Person.destroy = function ( personId) {
         // case if actor
         let actIds = movie.actors;
         var actIdArray = []
-        console.log(actIds);
         for (const key of Object.keys( actIds)) {
+          console.log("check actIdArray");
           actIdArray.push(key);
         }
+        console.log(actIdArray);
         if (actIdArray.includes(personId)) {
-          delete Movie.instances[movieId];
-          // Movie.instances[movieId].actors = [];
-          // Movie.instances[movieId].actorIdRefs = [];
-          // console.log( `Actors of Movie ${movie.movieId} changed.`);
-          console.log( `Movie ${movie.movieId} deleted.`);
+          delete Movie.instances[movieId].actors[personId];
+          console.log( `Actors of Movie ${movie.movieId} changed.`);
+          // console.log( `Movie ${movie.movieId} deleted.`);
         }
         // case if director
         let dirId = String(movie.director.personId);
