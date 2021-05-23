@@ -199,14 +199,24 @@ class Movie {
   }
   set director( p) {
     if (!p) {  // unset director
-      return new MandatoryValueConstraintViolation("The director must not be empty!");
+      // delete the corresponding inverse reference from Publisher::publishedBooks
+      delete this._director.directedMovies[ this._movieId];
+      // unset the publisher property
+      delete this._director;
+      // return new MandatoryValueConstraintViolation("The director must not be empty!");
     } else {
       // p can be an ID reference or an object reference
       const person_id = (typeof p !== "object") ? p : p.personId;
       const validationResult = Movie.checkDirector( person_id);
       if (validationResult instanceof NoConstraintViolation) {
+        if (this._director) {
+          // delete the obsolete inverse reference in Publisher::publishedBooks
+          delete this._director.directedMovies[ this._movieId];
+        }
         // create the new person reference
         this._director = Person.instances[ person_id];
+        // automatically add the derived inverse reference
+        this._director.directedMovies[ this._movieId] = this;
       } else {
         throw validationResult;
       }
@@ -233,9 +243,13 @@ class Movie {
     const validationResult = Movie.checkActor( person_id);
     if (person_id && validationResult instanceof NoConstraintViolation) {
       // add the new author reference
+      this._actors[person_id] = Person.instances[person_id];
+      // automatically add the derived inverse reference
+      this._actors[person_id].playedMovies[this._movieId] = this;
+
+/*       // add the new author reference
       const key = String( person_id);
-      console.log(Person.instances[key]);
-      this._actors[key] = Person.instances[ key];
+      this._actors[key] = Person.instances[ key]; */
     } else {
       throw validationResult;
     }
@@ -245,15 +259,15 @@ class Movie {
     const person_id = (typeof a !== "object") ? parseInt( a) : a.personId;
     const validationResult = Movie.checkActor( person_id);
     if (validationResult instanceof NoConstraintViolation) {
+      // automatically delete the derived inverse reference
+      delete this._actors[person_id].playedMovies[this._movieId];
       // delete the author reference
-      delete this._actors[String( person_id)];
+      delete this._actors[person_id];
     } else {
       throw validationResult;
     }
   }
   set actors( actors) {
-    console.log("set actors");
-    console.log(actors);
     this._actors = {};
     if (Array.isArray(actors)) {  // array of IdRefs
       for (const idRef of actors) {
@@ -273,25 +287,27 @@ class Movie {
   // Convert object to record with ID references
   toJSON() {  // is invoked by JSON.stringify
     var rec = {};
+    // loop over all movie properties
     for (const p of Object.keys( this)) {
       // copy only property slots with underscore prefix
-      if (p.charAt(0) !== "_") continue;
-      switch (p) {
-        case "_publisher":
-          // convert object reference to ID reference
-          if (this._director) rec.director_id = this._personId.name;
-          break;
-        case "_actors":
-          // convert the map of object references to a list of ID references
-          rec.actorsIdRefs = [];
-          for (const personIdStr of Object.keys( this.actors)) {
-            rec.actorsIdRefs.push( parseInt( personIdStr));
+      if (p.charAt(0) === "_") {
+        switch (p) {
+          case "_director":
+            // convert object reference to ID reference
+            if (this._director) rec.director = this._director.personId;
+            break;
+          case "_actors":
+            // convert the map of object references to a list of ID references
+            rec.actorsIdRefs = [];
+            for (const personIdStr of Object.keys( this.actors)) {
+              rec.actorsIdRefs.push( parseInt( personIdStr));
+            }
+            break;
+          default:
+            // remove underscore prefix
+            rec[p.substr(1)] = this[p];
           }
-          break;
-        default:
-          // remove underscore prefix
-          rec[p.substr(1)] = this[p];
-      }
+      } 
     }
     return rec;
   }
@@ -317,8 +333,6 @@ Movie.add = function (slots) {
     movie = null;
   }
   if (movie) {
-    console.log("check here");
-    console.log(movie);
     Movie.instances[movie.movieId] = movie;
     console.log( `${movie.toString()} created!`);
   }
@@ -332,10 +346,6 @@ Movie.update = function ({movieId, title, releaseDate, movieRating, movieGenre, 
   const movie = Movie.instances[movieId],
       objectBeforeUpdate = cloneObject( movie);  // save the current state of movie
   var noConstraintViolated = true, updatedProperties = [];
-  console.log("Movie.instances");
-  console.log(Movie.instances);
-  console.log("actorIdRefsToRemove");
-  console.log(actorIdRefsToRemove);
   try {
     if (title && movie.title !== title) {
       movie.title = title;
@@ -360,9 +370,6 @@ Movie.update = function ({movieId, title, releaseDate, movieRating, movieGenre, 
     if (actorIdRefsToAdd) {
       updatedProperties.push("actors(added)");
       for (let actorIdRef of actorIdRefsToAdd) {
-        console.log("actor");
-        console.log(actorIdRef);
-        console.log(Object.getOwnPropertyNames(movie));
         movie.addActor( actorIdRef);
       }
     }
@@ -405,11 +412,9 @@ Movie.destroy = function (movieId) {
 Movie.retrieveAll = function () {
   var movies = {};
   try {
-      if (!localStorage["movies"]) localStorage["movies"] = "{}";
-      else {
+
         movies = JSON.parse( localStorage["movies"]);
         console.log( `${Object.keys( movies).length} movies records loaded.`);
-      }
   } catch (e) {
     alert( "Error when reading from Local Storage\n" + e);
   }
@@ -442,13 +447,9 @@ Movie.retrieveAll = function () {
  *  Save all movie objects
  */
 Movie.saveAll = function () {
-  const nmrOfMovies = Object.keys( Movie.instances).length;
-  try {
-    localStorage["movies"] = JSON.stringify( Movie.instances);
-    console.log( `${nmrOfMovies} movie records saved.`);
-  } catch (e) {
-    alert( "Error when writing to Local Storage\n" + e);
-  }
+  const nmrOfMovies = Object.keys( Movie.instances);
+  localStorage["movies"] = JSON.stringify( Movie.instances);
+  console.log( `${nmrOfMovies.lenght} movie records saved.`);
 };
 
 

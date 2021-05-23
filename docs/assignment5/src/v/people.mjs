@@ -3,7 +3,7 @@
  ***************************************************************/
 import Movie from "../m/Movie.mjs";
 import Person from "../m/Person.mjs";
-import { fillSelectWithOptions } from "../../lib/util.mjs";
+import { fillSelectWithOptions, createListFromMap } from "../../lib/util.mjs";
 
 /***************************************************************
  Load data
@@ -40,11 +40,17 @@ document.getElementById("retrieveAndListAll")
   .addEventListener("click", function () {
     const tableBodyEl = document.querySelector("section#Person-R > table > tbody");
     tableBodyEl.innerHTML = "";
-    for (let key of Object.keys(Person.instances)) {
+    for (let key of Object.keys( Person.instances)) {
       const person = Person.instances[key];
       const row = tableBodyEl.insertRow();
       row.insertCell().textContent = person.personId;
       row.insertCell().textContent = person.name;
+      // create list of movies directed by this artist
+      const listEldirMovies = createListFromMap(person.directedMovies, "title");
+      row.insertCell().appendChild(listEldirMovies); 
+      // create list of movies plyed by this artist
+      const listElplayMovies = createListFromMap(person.playedMovies, "title");
+      row.insertCell().appendChild(listElplayMovies); 
     }
     document.getElementById("Person-M").style.display = "none";
     document.getElementById("Person-R").style.display = "block";
@@ -52,6 +58,7 @@ document.getElementById("retrieveAndListAll")
     document.getElementById("Person-U").style.display = "none";
     document.getElementById("Person-D").style.display = "none";
   });
+
 
 /**********************************************
  Use case Create Person
@@ -88,7 +95,6 @@ createFormEl["commit"].addEventListener("click", function () {
     Person.checkPersonAsId(slots.personId).message);
   createFormEl.name.setCustomValidity(
     Person.checkName(slots.name).message);
-  /* SIMPLIFIED CODE: no before-submit validation of name */
   // save the input data only if all form fields are valid
   if (createFormEl.checkValidity()) Person.add(slots);
 });

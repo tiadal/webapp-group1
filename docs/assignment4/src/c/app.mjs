@@ -20,7 +20,8 @@ function generateTestData() {
     // generate people
     Person.instances["1"] = new Person({
       personId: 1,
-      name: "Stephen Frears"
+      name: "Stephen Frears",
+
     });
     Person.instances["2"] = new Person({
       personId: 2,

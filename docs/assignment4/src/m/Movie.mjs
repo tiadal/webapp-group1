@@ -207,6 +207,9 @@ class Movie {
       if (validationResult instanceof NoConstraintViolation) {
         // create the new person reference
         this._director = Person.instances[ person_id];
+        // automatically add the derived inverse reference
+        this._director[person_id].directedMovies[this._movieId] = this;
+
       } else {
         throw validationResult;
       }
@@ -236,6 +239,8 @@ class Movie {
       const key = String( person_id);
       console.log(Person.instances[key]);
       this._actors[key] = Person.instances[ key];
+      // automatically add the derived inverse reference
+      this._actors[key].playedMovies[this._movieId] = this;
     } else {
       throw validationResult;
     }
@@ -245,6 +250,8 @@ class Movie {
     const person_id = (typeof a !== "object") ? parseInt( a) : a.personId;
     const validationResult = Movie.checkActor( person_id);
     if (validationResult instanceof NoConstraintViolation) {
+      // automatically deletes the derived inverse reference
+      delete this._actors[person_id].playedMovies[this._movieId];
       // delete the author reference
       delete this._actors[String( person_id)];
     } else {
