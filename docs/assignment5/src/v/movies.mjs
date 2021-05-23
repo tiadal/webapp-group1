@@ -40,13 +40,16 @@ document.getElementById("retrieveAndListAll")
 
     const tableBodyEl = document.querySelector("section#Movie-R>table>tbody");
     tableBodyEl.innerHTML = "";  // drop old content
+
     for (const key of Object.keys(Movie.instances)) {
       let movie = Movie.instances[key];
       const personaObj = Movie.instances[key].director.name;
       const personaStr = Person.instances[Movie.instances[key].director];
       const actorListEl = createListFromMap(movie.actors, "name");
       const row = tableBodyEl.insertRow();
+
       movie.movieRating = movie.movieRating - 1;
+
       row.insertCell().textContent = movie.movieId;
       row.insertCell().textContent = movie.title;
       if (movie.releaseDate === null) {
@@ -57,10 +60,8 @@ document.getElementById("retrieveAndListAll")
       row.insertCell().textContent = GenreEL.stringify(movie.movieGenre);
       row.insertCell().textContent = MovieRatingEL.labels[movie.movieRating];
       if (typeof personaObj !== "undefined") {
-        console.log("1");
         row.insertCell().textContent = personaObj;
       } else if (typeof personaStr !== "undefined") {
-        console.log("2");
         row.insertCell().textContent = personaStr._name;
       } else {
         console.log("error director missing");

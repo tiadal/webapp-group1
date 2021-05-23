@@ -9,6 +9,8 @@ class Person {
     constructor ({personId, name}) {
         this.personId = personId;
         this.name = name;
+        this._directedMovies = {};  // changed!
+        this._playedMovies = {}; // changed!
     }
     get personId() {
         return this._personId;
@@ -85,15 +87,29 @@ class Person {
         }
     }
 
+
+
+    // _directedMovies and _playedMovies
+    get directedMovies() { // changed!
+      return this._directedMovies;
+    }    
+    get playedMovies() { // changed!
+      return this._playedMovies;
+    }  
     // other methods
-    toJSON() {  // is invoked by JSON.stringify
+    toString() {
+      return `Person{ personId: ${this.personId}, name: ${this.name} }`;
+    }
+    toJSON() {   // changed!
         var rec = {};
         for (const p of Object.keys( this)) {
-          // remove underscore prefix
-          if (p.charAt(0) === "_") rec[p.substr(1)] = this[p];
+          if (p.charAt(0) === "_" && ( p !== "_directedMovies" || p !== "_playedMovies")) {
+            rec[p.substr(1)] = this[p];
+          }
         }
         return rec;
       }
+
 }
 /****************************************************
 *** Class-level ("static") properties ***************
@@ -142,8 +158,19 @@ Person.update = function ({personId, name}) {
 }
 
 Person.destroy = function ( personId) {
-    const person = Person.instances[personId];
-    for (const key of Object.keys( Movie.instances)) {
+        const person = Person.instances[personId];
+        // delete ref all actors movie records
+        for (const movieId of Object.keys( person.playedMovies)) {
+          let movie = person.playedMovies[movieId];
+          if (movie.actors[personId]) delete movie.actors[personId];
+        }
+
+        // delete all director movie records
+        for (const movieId of Object.keys( person.directedMovies)) {
+          delete Movie.instances[movieId];
+        }
+        
+/*  for (const key of Object.keys( Movie.instances)) {
         const movie = Movie.instances[key];
         let movieId = movie.movieId;
         // case if actor
@@ -153,7 +180,6 @@ Person.destroy = function ( personId) {
           console.log("check actIdArray");
           actIdArray.push(key);
         }
-        console.log(actIdArray);
         if (actIdArray.includes(personId)) {
           delete Movie.instances[movieId].actors[personId];
           console.log( `Actors of Movie ${movie.movieId} changed.`);
@@ -165,10 +191,9 @@ Person.destroy = function ( personId) {
           delete Movie.instances[movieId];
           console.log( `Movie ${movie.movieId} deleted.`);
         }
-    };
-    console.log(actIdArray);
-    delete Person.instances[personId];
-    console.log( `Person ${person.name} deleted.`);
+    }; */
+        delete Person.instances[personId];
+        console.log( `Person ${person.name} deleted.`);
 }
 
 Person.retrieveAll = function () {
@@ -182,7 +207,11 @@ Person.retrieveAll = function () {
     }
     for (const key of Object.keys( people)) {
         // convert record to (typed) object
-        Person.instances[key] = new Person( people[key]);
+        try {
+          Person.instances[key] = new Person( people[key]);
+        } catch (e) {
+          console.log(`${e.constructor.name} while deserializing person ${key}: ${e.message}`);
+        }
     }
     console.log( `${Object.keys( people).length} people records loaded.`);
   };
