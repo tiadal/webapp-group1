@@ -26,7 +26,7 @@ class Movie {
   }
 
   // movieId
-  get movieId() {
+static movieId() {  //changed to static
     return this._movieId;
   }
   static checkId( movieId) {
@@ -49,12 +49,12 @@ class Movie {
       if (!movieId) {
       constraintViolation = new MandatoryValueConstraintViolation(
           "A value for Movie Id must be provided!");
-      } else if (Movie.instances[movieId]) {  
+      } else if (Movie.instances[movieId]) {
       constraintViolation = new UniquenessConstraintViolation(
           "There is already a movie record with this Id!");
       } else {
       constraintViolation = new NoConstraintViolation();
-      } 
+      }
     }
     return constraintViolation;
   }
@@ -72,10 +72,10 @@ class Movie {
   }
   static checkTitle( title) {
     if (!title) {
-      return new MandatoryValueConstraintViolation( 
+      return new MandatoryValueConstraintViolation(
           "The Title must not be empty!");
     } else if (typeof title !== "string" || title.trim() === "" || title.length > 120) {
-      return new RangeConstraintViolation( 
+      return new RangeConstraintViolation(
           "The title must be a string with a max lenght of 120 chars");
     } else {
       return new NoConstraintViolation();
@@ -96,7 +96,7 @@ class Movie {
   static checkReleaseDate( releaseDate) {
     var minDate = new Date(1895, 12, 28);
     if (!releaseDate) {
-      return new MandatoryValueConstraintViolation( 
+      return new MandatoryValueConstraintViolation(
         "The Releasedate must not be empty!");
     } else {
       var checkReleaseDate = new Date(releaseDate);
@@ -116,7 +116,7 @@ class Movie {
     }
   }
 
-  
+
   // movieRating
   get movieRating() {
     return this._movieRating;
@@ -197,7 +197,7 @@ class Movie {
     }
     return validationResult;
   }
-  set director( p) {
+    set director( p) {
     if (!p) {  // unset director
       // delete the corresponding inverse reference from Publisher::publishedBooks
       delete this._director.directedMovies[ this._movieId];
@@ -223,10 +223,25 @@ class Movie {
     }
   }
 
+
   // actors
   get actors() {
     return this._actors;
   }
+  setActors (a) {
+      var keys=[], i=0;
+      this.actors = {};
+      if (Array.isArray(a)) {  // array of IdRefs
+          for (i= 0; i < a.length; i++) {
+              this.addActor(a[i]);
+          }
+      } else {  // map of object refs
+          keys = Object.keys( a);
+          for (i=0; i < keys.length; i++) {
+              this.addActor( a[keys[i]]);
+          }
+      }
+  };
   static checkActor( person_id) {
     var validationResult = null;
     if (!person_id) {
@@ -254,6 +269,7 @@ class Movie {
       throw validationResult;
     }
   }
+
   removeActor( a) {
     // a can be an ID reference or an object reference
     const person_id = (typeof a !== "object") ? parseInt( a) : a.personId;
@@ -307,7 +323,7 @@ class Movie {
             // remove underscore prefix
             rec[p.substr(1)] = this[p];
           }
-      } 
+      }
     }
     return rec;
   }
@@ -358,7 +374,7 @@ Movie.update = function ({movieId, title, releaseDate, movieRating, movieGenre, 
     if (movieRating !== movie.movieRating) {
       movie.movieRating = movieRating;
       updatedProperties.push("movieRating");
-    }  
+    }
     if (movieGenre !== movie.movieGenre) {
       movie.movieGenre = movieGenre;
       updatedProperties.push("movieGenre");
@@ -406,7 +422,7 @@ Movie.destroy = function (movieId) {
   }
 };
 /**
- *  Load all movie table rows and convert them to objects 
+ *  Load all movie table rows and convert them to objects
  *  Precondition: people and people must be loaded first
  */
 Movie.retrieveAll = function () {
@@ -434,7 +450,7 @@ Movie.retrieveAll = function () {
         movieGenre: movieGenre,
         director: director,
         actorIdRefs: actorsIdRefs
-    });  // WATCH OUT THIS LINE!!! 
+    });  // WATCH OUT THIS LINE!!!
       // Movie.instances[movieId] = movies[movieId];
   }
 };
