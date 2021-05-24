@@ -22,6 +22,7 @@ time, mark, audio, video {
 
 body {
     line-height:1;
+    font: 16px/26px Helvetica, Helvetica Neue, Arial;
 }
 
 article,aside,details,figcaption,figure,
@@ -49,6 +50,22 @@ a {
     font-size:100%;
     vertical-align:baseline;
     background:transparent;
+}
+nav a {
+    display: block;
+    margin-bottom: 10px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+    color: black;
+    background: var(--dark-bg-color);
+}
+nav a:hover,
+nav a:visited {
+    color: white;
+}
+nav a:hover {
+    text-decoration: underline;
 }
 
 /* change colours to suit your needs */
@@ -78,7 +95,7 @@ hr {
     /* position */
     display:block;
     height:1px;
-    border:0;  
+    border:0;
     margin:1em 0;
     padding:0;
 }
@@ -506,7 +523,7 @@ form div.MultiChoiceWidget > ul > li.added {
         padding:1rem;
         border-radius: 4px;
     }
-    
+
     main > .sideMenu {
         /* position */
         grid-column-start: 1;
@@ -531,5 +548,5 @@ form div.MultiChoiceWidget > ul > li.added {
         border-radius: 4px;
         margin: 0 0 1rem 0;
     }
-    
+
 }

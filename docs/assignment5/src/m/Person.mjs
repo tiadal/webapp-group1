@@ -23,10 +23,10 @@ class Person {
             if (isNaN( personId) || !Number.isInteger( personId) || personId < 1) {
               return new RangeConstraintViolation("The person ID must be a positive integer!");
             } else {
-              return new NoConstraintViolation();               
+              return new NoConstraintViolation();
             }
         }
-    } 
+    }
 
     static checkPersonAsId( personId ) {
         var constraintViolation = Person.checkPersonId( personId);
@@ -35,7 +35,7 @@ class Person {
             if (isNaN( personId)) {
                 return new MandatoryValueConstraintViolation( "A positive integer value for the person ID is required!");
             } else if (Person.instances[String( personId)]) {
-                constraintViolation = new UniquenessConstraintViolation("There is already a person record with this author ID!");  
+                constraintViolation = new UniquenessConstraintViolation("There is already a person record with this author ID!");
             } else {
               constraintViolation = new NoConstraintViolation();
             }
@@ -48,7 +48,7 @@ class Person {
         if  ((constraintViolation instanceof NoConstraintViolation) && personId) {
             if(!Person.instances[String( personId)]) {
                 constraintViolation = new ReferentialIntegrityConstraintViolation(
-                    "There is no person record with this ID!"); 
+                    "There is no person record with this ID!");
             }
         }
         return constraintViolation;
@@ -74,10 +74,10 @@ class Person {
           if (typeof name !== "string") {
             return new RangeConstraintViolation("The name must be a string!");
           } else {
-            return new NoConstraintViolation();               
+            return new NoConstraintViolation();
           }
       }
-    } 
+    }
     set name( name) {
         var constraintViolation = Person.checkName( name);
         if (constraintViolation instanceof NoConstraintViolation) {
@@ -92,10 +92,10 @@ class Person {
     // _directedMovies and _playedMovies
     get directedMovies() { // changed!
       return this._directedMovies;
-    }    
+    }
     get playedMovies() { // changed!
       return this._playedMovies;
-    }  
+    }
     // other methods
     toString() {
       return `Person{ personId: ${this.personId}, name: ${this.name} }`;
@@ -169,7 +169,7 @@ Person.destroy = function ( personId) {
         for (const movieId of Object.keys( person.directedMovies)) {
           delete Movie.instances[movieId];
         }
-        
+
 /*  for (const key of Object.keys( Movie.instances)) {
         const movie = Movie.instances[key];
         let movieId = movie.movieId;
