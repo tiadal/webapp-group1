@@ -78,7 +78,7 @@ hr {
     /* position */
     display:block;
     height:1px;
-    border:0;  
+    border:0;
     margin:1em 0;
     padding:0;
 }
@@ -506,7 +506,7 @@ form div.MultiChoiceWidget > ul > li.added {
         padding:1rem;
         border-radius: 4px;
     }
-    
+
     main > .sideMenu {
         /* position */
         grid-column-start: 1;
@@ -531,5 +531,5 @@ form div.MultiChoiceWidget > ul > li.added {
         border-radius: 4px;
         margin: 0 0 1rem 0;
     }
-    
+
 }

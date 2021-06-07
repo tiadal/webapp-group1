@@ -1,31 +1,59 @@
 import Person from "./Person.mjs";
-import {cloneObject,isIntegerOrIntegerString} from "../../lib/util.mjs";
-import {NoConstraintViolation, MandatoryValueConstraintViolation,
-  RangeConstraintViolation, PatternConstraintViolation, UniquenessConstraintViolation, FrozenValueConstraintViolation, ConstraintViolation}
-  from "../../lib/errorTypes.mjs";
+
+
+import {
+  cloneObject,
+  isIntegerOrIntegerString
+} from "../../lib/util.mjs";
+import {
+  NoConstraintViolation,
+  MandatoryValueConstraintViolation,
+  RangeConstraintViolation,
+  PatternConstraintViolation,
+  UniquenessConstraintViolation,
+  FrozenValueConstraintViolation,
+  ConstraintViolation
+}
+from "../../lib/errorTypes.mjs";
 import Enumeration from "../../lib/Enumeration.mjs"
 
 // Enumerations
 const MovieRatingEL = new Enumeration({
-    "pg13":"Not Under 13",
-    "g":"General Audiences",
-    "pg":"Parental Guidance",
-    "nc17":"Not Under 17",
-    "r":"Restricted",});
-const GenreEL = new Enumeration(["Action","Animation","Adventure","Crime","Comedy","Documentary","Drama","Fantasy","Family","Noire","Horror","Musical","Romance","SciFi","War"]);
+  "pg13": "Not Under 13",
+  "g": "General Audiences",
+  "pg": "Parental Guidance",
+  "nc17": "Not Under 17",
+  "r": "Restricted",
+});
+const GenreEL = new Enumeration(["Action", "Animation", "Adventure", "Crime", "Comedy", "Documentary", "Drama", "Fantasy", "Family", "Noire", "Horror", "Musical", "Romance", "SciFi", "War"]);
 const MovieTypeEL = new Enumeration(["Biography", "TvSeriesEpisode"]);
 
 class Movie {
-  constructor ({movieId, title, releaseDate, movieRating, movieGenre, director, directorIdRef, actors, actorIdRefs, movieType, tvSeriesName, episodeNo, about, aboutIdRef}) {
+  constructor({
+    movieId,
+    title,
+    releaseDate,
+    movieRating,
+    movieGenre,
+    director,
+    directorIdRef,
+    actors,
+    actorIdRefs,
+    movieType,
+    tvSeriesName,
+    episodeNo,
+    about,
+    aboutIdRef
+  }) {
     this.movieId = movieId;
     this.title = title;
     this.releaseDate = releaseDate;
     this.movieRating = movieRating;
     this.movieGenre = movieGenre;
     this.director = director || directorIdRef;
-    this.actors = actors || actorIdRefs ;
+    this.actors = actors || actorIdRefs;
     // optional properties
-    if (movieType) this.movieType = movieType;  // from MovieTypeEL
+    if (movieType) this.movieType = movieType; // from MovieTypeEL
     if (tvSeriesName) this.tvSeriesName = tvSeriesName;
     if (episodeNo) this.episodeNo = episodeNo;
     if (about || aboutIdRef) this.about = about || aboutIdRef;
@@ -36,10 +64,10 @@ class Movie {
   get movieId() {
     return this._movieId;
   }
-  static checkId( movieId) {
+  static checkId(movieId) {
     if (!movieId) {
       return new MandatoryValueConstraintViolation("The Movie Id must not be empty!");
-    } else if (!isIntegerOrIntegerString( movieId)) {
+    } else if (!isIntegerOrIntegerString(movieId)) {
       return new RangeConstraintViolation("The value of Movie Id must be an integer!");
     } else {
       if (typeof movieId === "string") movieId = parseInt(movieId);
@@ -50,23 +78,23 @@ class Movie {
       }
     }
   }
-  static checkMovieIdAsId( movieId) {
-    var constraintViolation = Movie.checkId( movieId);
+  static checkMovieIdAsId(movieId) {
+    var constraintViolation = Movie.checkId(movieId);
     if ((constraintViolation instanceof NoConstraintViolation)) {
       if (!movieId) {
-      constraintViolation = new MandatoryValueConstraintViolation(
+        constraintViolation = new MandatoryValueConstraintViolation(
           "A value for Movie Id must be provided!");
-      } else if (Movie.instances[movieId]) {  
-      constraintViolation = new UniquenessConstraintViolation(
+      } else if (Movie.instances[movieId]) {
+        constraintViolation = new UniquenessConstraintViolation(
           "There is already a movie record with this Id!");
       } else {
-      constraintViolation = new NoConstraintViolation();
-      } 
+        constraintViolation = new NoConstraintViolation();
+      }
     }
     return constraintViolation;
   }
-  set movieId( movieId) {
-    const validationResult = Movie.checkMovieIdAsId( movieId);
+  set movieId(movieId) {
+    const validationResult = Movie.checkMovieIdAsId(movieId);
     if (validationResult instanceof NoConstraintViolation) {
       this._movieId = movieId;
     } else {
@@ -77,72 +105,72 @@ class Movie {
   get title() {
     return this._title;
   }
-  static checkTitle( title) {
+  static checkTitle(title) {
     if (!title) {
-      return new MandatoryValueConstraintViolation( 
-          "The Title must not be empty!");
+      return new MandatoryValueConstraintViolation(
+        "The Title must not be empty!");
     } else if (typeof title !== "string" || title.trim() === "" || title.length > 120) {
-      return new RangeConstraintViolation( 
-          "The title must be a string with a max lenght of 120 chars");
+      return new RangeConstraintViolation(
+        "The title must be a string with a max lenght of 120 chars");
     } else {
       return new NoConstraintViolation();
     }
   }
-  set title( title) {
-    const validationResult = Movie.checkTitle( title);
+  set title(title) {
+    const validationResult = Movie.checkTitle(title);
     if (validationResult instanceof NoConstraintViolation) {
-        this._title = title;
+      this._title = title;
     } else {
-        throw validationResult;
+      throw validationResult;
     }
   }
   // releaseDate
   get releaseDate() {
     return this._releaseDate;
   }
-  static checkReleaseDate( releaseDate) {
+  static checkReleaseDate(releaseDate) {
     var minDate = new Date(1895, 12, 28);
     if (!releaseDate) {
-      return new MandatoryValueConstraintViolation( 
+      return new MandatoryValueConstraintViolation(
         "The Releasedate must not be empty!");
     } else {
       var checkReleaseDate = new Date(releaseDate);
       if (checkReleaseDate < minDate) {
-      return new RangeConstraintViolation("The Release Date must be after 1895-12-28");
+        return new RangeConstraintViolation("The Release Date must be after 1895-12-28");
       } else {
-      return new NoConstraintViolation();
+        return new NoConstraintViolation();
       }
     }
   }
   set releaseDate(releaseDate) {
-    const validationResult = Movie.checkReleaseDate( releaseDate);
+    const validationResult = Movie.checkReleaseDate(releaseDate);
     if (validationResult instanceof NoConstraintViolation) {
-        this._releaseDate = new Date(releaseDate);
+      this._releaseDate = new Date(releaseDate);
     } else {
-        throw validationResult;
+      throw validationResult;
     }
   }
 
-  
+
   // movieRating
   get movieRating() {
     return this._movieRating;
   }
-  static checkMovieRating( movieRating) {
+  static checkMovieRating(movieRating) {
     if (!movieRating) {
       return new NoConstraintViolation();
-    } else if (!isIntegerOrIntegerString( movieRating)) {
+    } else if (!isIntegerOrIntegerString(movieRating)) {
       return new MandatoryValueConstraintViolation(
-      "Movie Rating value is wrong!");
+        "Movie Rating value is wrong!");
     } else {
-    return new NoConstraintViolation();
+      return new NoConstraintViolation();
     }
   }
 
-  set movieRating( movieRating) {
-    const validationResult = Movie.checkMovieRating( movieRating);
+  set movieRating(movieRating) {
+    const validationResult = Movie.checkMovieRating(movieRating);
     if (validationResult instanceof NoConstraintViolation) {
-      this._movieRating = parseInt( movieRating);
+      this._movieRating = parseInt(movieRating);
     } else {
       throw validationResult;
     }
@@ -151,29 +179,29 @@ class Movie {
   get movieGenre() {
     return this._movieGenre;
   }
-  static checkMovieGenre( movieGenre) {
+  static checkMovieGenre(movieGenre) {
     if (!movieGenre) {
       return new MandatoryValueConstraintViolation(
         "No movie genre form provided!");
-    } else if (!Number.isInteger( movieGenre) || movieGenre < 1 ||
-    movieGenre > GenreEL.MAX) {
+    } else if (!Number.isInteger(movieGenre) || movieGenre < 1 ||
+      movieGenre > GenreEL.MAX) {
       return new RangeConstraintViolation(
         `Invalid value for movie genre form: ${movieGenre}`);
     } else {
       return new NoConstraintViolation();
     }
   }
-  static checkMovieGenres( movieGenre) {
-    if (!movieGenre || (Array.isArray( movieGenre) &&
-    movieGenre.length === 0)) {
+  static checkMovieGenres(movieGenre) {
+    if (!movieGenre || (Array.isArray(movieGenre) &&
+        movieGenre.length === 0)) {
       return new MandatoryValueConstraintViolation(
         "No movie genre form provided!");
-    } else if (!Array.isArray( movieGenre)) {
+    } else if (!Array.isArray(movieGenre)) {
       return new RangeConstraintViolation(
         "The value of publicationForms must be an array!");
     } else {
       for (let i of movieGenre.keys()) {
-        const validationResult = Movie.checkMovieGenre( movieGenre[i]);
+        const validationResult = Movie.checkMovieGenre(movieGenre[i]);
         if (!(validationResult instanceof NoConstraintViolation)) {
           return validationResult;
         }
@@ -182,8 +210,8 @@ class Movie {
     }
   }
 
-  set movieGenre( movieGenre) {
-    const validationResult = Movie.checkMovieGenres( movieGenre);
+  set movieGenre(movieGenre) {
+    const validationResult = Movie.checkMovieGenres(movieGenre);
     if (validationResult instanceof NoConstraintViolation) {
       this._movieGenre = movieGenre;
     } else {
@@ -195,35 +223,35 @@ class Movie {
   get director() {
     return this._director;
   }
-  static checkDirector( person_id) {
+  static checkDirector(person_id) {
     var validationResult = null;
     if (!person_id) {
       return new MandatoryValueConstraintViolation("The director must not be empty!");
     } else {
-      validationResult = Person.checkPersonAsIdRef( person_id);
+      validationResult = Person.checkPersonAsIdRef(person_id);
     }
     return validationResult;
   }
-  set director( p) {
-    if (!p) {  // unset director
+  set director(p) {
+    if (!p) { // unset director
       // delete the corresponding inverse reference from Publisher::publishedBooks
-      delete this._director.directedMovies[ this._movieId];
+      delete this._director.directedMovies[this._movieId];
       // unset the publisher property
       delete this._director;
       // return new MandatoryValueConstraintViolation("The director must not be empty!");
     } else {
       // p can be an ID reference or an object reference
       const person_id = (typeof p !== "object") ? p : p.personId;
-      const validationResult = Movie.checkDirector( person_id);
+      const validationResult = Movie.checkDirector(person_id);
       if (validationResult instanceof NoConstraintViolation) {
         if (this._director) {
           // delete the obsolete inverse reference in Publisher::publishedBooks
-          delete this._director.directedMovies[ this._movieId];
+          delete this._director.directedMovies[this._movieId];
         }
         // create the new person reference
-        this._director = Person.instances[ person_id];
+        this._director = Person.instances[person_id];
         // automatically add the derived inverse reference
-        this._director.directedMovies[ this._movieId] = this;
+        /*         this._director.directedMovies[ this._movieId] = this; */
       } else {
         throw validationResult;
       }
@@ -234,37 +262,37 @@ class Movie {
   get actors() {
     return this._actors;
   }
-  static checkActor( person_id) {
+  static checkActor(person_id) {
     var validationResult = null;
     if (!person_id) {
       return new MandatoryValueConstraintViolation("The actors must not be empty!");
     } else {
       // invoke foreign key constraint check
-      validationResult = Person.checkPersonAsIdRef( person_id);
+      validationResult = Person.checkPersonAsIdRef(person_id);
     }
     return validationResult;
   }
-  addActor( a) {
+  addActor(a) {
     // a can be an ID reference or an object reference
-    const person_id = (typeof a !== "object") ? parseInt( a) : a.personId;
-    const validationResult = Movie.checkActor( person_id);
+    const person_id = (typeof a !== "object") ? parseInt(a) : a.personId;
+    const validationResult = Movie.checkActor(person_id);
     if (person_id && validationResult instanceof NoConstraintViolation) {
       // add the new author reference
       this._actors[person_id] = Person.instances[person_id];
       // automatically add the derived inverse reference
-      this._actors[person_id].playedMovies[this._movieId] = this;
+      /*       this._actors[person_id].playedMovies[this._movieId] = this; */
 
-/*       // add the new author reference
-      const key = String( person_id);
-      this._actors[key] = Person.instances[ key]; */
+      /*       // add the new author reference
+            const key = String( person_id);
+            this._actors[key] = Person.instances[ key]; */
     } else {
       throw validationResult;
     }
   }
-  removeActor( a) {
+  removeActor(a) {
     // a can be an ID reference or an object reference
-    const person_id = (typeof a !== "object") ? parseInt( a) : a.personId;
-    const validationResult = Movie.checkActor( person_id);
+    const person_id = (typeof a !== "object") ? parseInt(a) : a.personId;
+    const validationResult = Movie.checkActor(person_id);
     if (validationResult instanceof NoConstraintViolation) {
       // automatically delete the derived inverse reference
       delete this._actors[person_id].playedMovies[this._movieId];
@@ -274,15 +302,15 @@ class Movie {
       throw validationResult;
     }
   }
-  set actors( actors) {
+  set actors(actors) {
     this._actors = {};
-    if (Array.isArray(actors)) {  // array of IdRefs
+    if (Array.isArray(actors)) { // array of IdRefs
       for (const idRef of actors) {
-        this.addActor( idRef);
+        this.addActor(idRef);
       }
-    } else {  // map of IdRefs to object references
-      for (const idRef of Object.keys( actors)) {
-        this.addActor( a[idRef]);
+    } else { // map of IdRefs to object references
+      for (const idRef of Object.keys(actors)) {
+        this.addActor(a[idRef]);
       }
     }
   }
@@ -292,36 +320,36 @@ class Movie {
     return this._movieType;
   }
 
-/*   static checkMovieType( movieType) {
-    if (movieType === undefined || movieType === "") {
-      return new NoConstraintViolation();  // type is optional
-    } else if (!isIntegerOrIntegerString(movieType) || parseInt(movieType) < 1 || parseInt(movieType) > MovieTypeEL.MAX) {
-      return new RangeConstraintViolation("Invalid value for category: "+ movieType);
-    } else {
-      return new NoConstraintViolation();
-    }
-  } */
+  /*   static checkMovieType( movieType) {
+      if (movieType === undefined || movieType === "") {
+        return new NoConstraintViolation();  // type is optional
+      } else if (!isIntegerOrIntegerString(movieType) || parseInt(movieType) < 1 || parseInt(movieType) > MovieTypeEL.MAX) {
+        return new RangeConstraintViolation("Invalid value for category: "+ movieType);
+      } else {
+        return new NoConstraintViolation();
+      }
+    } */
 
-  static checkMovieType( movieType) {
+  static checkMovieType(movieType) {
     if (!movieType) {
       return new NoConstraintViolation();
-    } else if (!isIntegerOrIntegerString( movieType)) {
+    } else if (!isIntegerOrIntegerString(movieType)) {
       return new MandatoryValueConstraintViolation(
-      "movieType value is wrong!");
+        "movieType value is wrong!");
     } else {
-    return new NoConstraintViolation();
+      return new NoConstraintViolation();
     }
   }
 
-  set movieType( movieType) {
+  set movieType(movieType) {
     var validationResult = null;
     if (this.movieType) {
       validationResult = new FrozenValueConstraintViolation("The type cannot be changed!");
     } else {
-      validationResult = Movie.checkMovieType( movieType);
+      validationResult = Movie.checkMovieType(movieType);
     }
     if (validationResult instanceof NoConstraintViolation) {
-      this._movieType = parseInt( movieType);
+      this._movieType = parseInt(movieType);
     } else {
       throw validationResult;
     }
@@ -332,8 +360,8 @@ class Movie {
     return this._tvSeriesName;
   }
 
-  static checkTvSeriesName( tvSeriesName, movieType) {
-    const cat = parseInt( movieType);
+  static checkTvSeriesName(tvSeriesName, movieType) {
+    const cat = parseInt(movieType);
     if (cat === MovieTypeEL.TVSERIESEPISODE && !tvSeriesName) {
       return new MandatoryValueConstraintViolation("A tvSeriesName must be provided for a tv series episode!");
     } else if (cat !== MovieTypeEL.TVSERIESEPISODE && tvSeriesName) {
@@ -345,8 +373,8 @@ class Movie {
     }
   }
 
-  set tvSeriesName( tvSeriesName) {
-    const validationResult = Movie.checkTvSeriesName( tvSeriesName, this.movieType);
+  set tvSeriesName(tvSeriesName) {
+    const validationResult = Movie.checkTvSeriesName(tvSeriesName, this.movieType);
     if (validationResult instanceof NoConstraintViolation) {
       this._tvSeriesName = tvSeriesName;
     } else {
@@ -359,8 +387,8 @@ class Movie {
     return this._episodeNo;
   }
 
-  static checkEpisodeNo( episodeNo, movieType) {
-    const cat = parseInt( movieType);
+  static checkEpisodeNo(episodeNo, movieType) {
+    const cat = parseInt(movieType);
     episodeNo = parseInt(episodeNo);
     if (cat === MovieTypeEL.TVSERIESEPISODE && !episodeNo) {
       return new MandatoryValueConstraintViolation("A episodeNo must be provided for a tv series episode!");
@@ -373,8 +401,8 @@ class Movie {
     }
   }
 
-  set episodeNo( episodeNo) {
-    const validationResult = Movie.checkEpisodeNo( episodeNo, this.movieType);
+  set episodeNo(episodeNo) {
+    const validationResult = Movie.checkEpisodeNo(episodeNo, this.movieType);
     if (validationResult instanceof NoConstraintViolation) {
       this._episodeNo = episodeNo;
     } else {
@@ -386,8 +414,8 @@ class Movie {
   get about() {
     return this._about;
   }
-  static checkAbout( person_id, movieType) {
-    const cat = parseInt( movieType);
+  static checkAbout(person_id, movieType) {
+    const cat = parseInt(movieType);
     person_id = parseInt(person_id);
     var validationResult = null;
     if (cat === MovieTypeEL.BIOGRAPHY && !person_id) {
@@ -395,29 +423,29 @@ class Movie {
     } else if (cat === !MovieTypeEL.BIOGRAPHY && person_id) {
       return new MandatoryValueConstraintViolation("The about must be empty if not a Biography!");
     } else {
-      validationResult = Person.checkPersonAsIdRef( person_id);
+      validationResult = Person.checkPersonAsIdRef(person_id);
     }
     return validationResult;
   }
 
-  set about( about) {
-    if (!about) {  
+  set about(about) {
+    if (!about) {
       // delete the corresponding inverse reference from Person::aboutMovies
-      delete this._about.aboutMovies[ this._movieId];
+      delete this._about.aboutMovies[this._movieId];
       delete this._about;
     } else {
       // p can be an ID reference or an object reference
       const person_id = (typeof about !== "object") ? about : about.personId;
-      const validationResult = Movie.checkAbout( person_id, this.movieType);
+      const validationResult = Movie.checkAbout(person_id, this.movieType);
       if (validationResult instanceof NoConstraintViolation) {
         if (this._about) {
           // delete the obsolete inverse reference in Person::aboutMovies
-          delete this._about.aboutMovies[ this._movieId];
+          delete this._about.aboutMovies[this._movieId];
         }
         // create the new person reference
-        this._about = Person.instances[ person_id];
+        this._about = Person.instances[person_id];
         // automatically add the derived inverse reference
-        this._about.aboutMovies[ this._movieId] = this;
+        /*         this._about.aboutMovies[ this._movieId] = this; */
       } else {
         throw validationResult;
       }
@@ -441,10 +469,10 @@ class Movie {
   }
 
   // Convert object to record with ID references
-  toJSON() {  // is invoked by JSON.stringify
+  toJSON() { // is invoked by JSON.stringify
     var rec = {};
     // loop over all movie properties
-    for (const p of Object.keys( this)) {
+    for (const p of Object.keys(this)) {
       // copy only property slots with underscore prefix
       if (p.charAt(0) === "_") {
         switch (p) {
@@ -455,8 +483,8 @@ class Movie {
           case "_actors":
             // convert the map of object references to a list of ID references
             rec.actorsIdRefs = [];
-            for (const personIdStr of Object.keys( this.actors)) {
-              rec.actorsIdRefs.push( parseInt( personIdStr));
+            for (const personIdStr of Object.keys(this.actors)) {
+              rec.actorsIdRefs.push(parseInt(personIdStr));
             }
             break;
           case "_about":
@@ -465,35 +493,35 @@ class Movie {
           default:
             // remove underscore prefix
             rec[p.substr(1)] = this[p];
-          }
-      } 
+        }
+      }
     }
     return rec;
   }
 }
 /***********************************************
-*** Class-level ("static") properties **********
-************************************************/
+ *** Class-level ("static") properties **********
+ ************************************************/
 // initially an empty collection (in the form of a map)
 Movie.instances = {};
 
 /********************************************************
-*** Class-level ("static") storage management methods ***
-*********************************************************/
+ *** Class-level ("static") storage management methods ***
+ *********************************************************/
 /**
  *  Create a new movie record/object
  */
-Movie.add = function (slots) {
+Movie.add = function(slots) {
   var movie = null;
   try {
-    movie = new Movie( slots);
+    movie = new Movie(slots);
   } catch (e) {
-    console.log( `${e.constructor.name}: ${e.message}`);
+    console.log(`${e.constructor.name}: ${e.message}`);
     movie = null;
   }
   if (movie) {
     Movie.instances[movie.movieId] = movie;
-    console.log( `${movie.toString()} created!`);
+    console.log(`${movie.toString()} created!`);
   }
 };
 /**
@@ -501,10 +529,24 @@ Movie.add = function (slots) {
  *  properties are updated with implicit setters for making sure
  *  that the new values are validated
  */
-Movie.update = function ({movieId, title, releaseDate, movieRating, movieGenre, director, actorIdRefsToAdd, actorIdRefsToRemove, movieType, tvSeriesName, episodeNo, about}) {
+Movie.update = function({
+  movieId,
+  title,
+  releaseDate,
+  movieRating,
+  movieGenre,
+  director,
+  actorIdRefsToAdd,
+  actorIdRefsToRemove,
+  movieType,
+  tvSeriesName,
+  episodeNo,
+  about
+}) {
   const movie = Movie.instances[movieId],
-      objectBeforeUpdate = cloneObject( movie);  // save the current state of movie
-  var noConstraintViolated = true, updatedProperties = [];
+    objectBeforeUpdate = cloneObject(movie); // save the current state of movie
+  var noConstraintViolated = true,
+    updatedProperties = [];
   try {
     if (title && movie.title !== title) {
       movie.title = title;
@@ -517,7 +559,7 @@ Movie.update = function ({movieId, title, releaseDate, movieRating, movieGenre, 
     if (movieRating !== movie.movieRating) {
       movie.movieRating = movieRating;
       updatedProperties.push("movieRating");
-    }  
+    }
     if (movieGenre !== movie.movieGenre) {
       movie.movieGenre = movieGenre;
       updatedProperties.push("movieGenre");
@@ -529,13 +571,13 @@ Movie.update = function ({movieId, title, releaseDate, movieRating, movieGenre, 
     if (actorIdRefsToAdd) {
       updatedProperties.push("actors(added)");
       for (let actorIdRef of actorIdRefsToAdd) {
-        movie.addActor( actorIdRef);
+        movie.addActor(actorIdRef);
       }
     }
     if (actorIdRefsToRemove) {
       updatedProperties.push("actors(removed)");
       for (let actorIdRef of actorIdRefsToRemove) {
-        movie.removeActor( actorIdRef);
+        movie.removeActor(actorIdRef);
       }
     }
     // new
@@ -547,11 +589,11 @@ Movie.update = function ({movieId, title, releaseDate, movieRating, movieGenre, 
         updatedProperties.push("movieType");
       } else if (movieType != movie.movieType) {
         throw new FrozenValueConstraintViolation(
-            "The movieType must not be changed!");
+          "The movieType must not be changed!");
       }
     } else if (movieType === "" && "movieType" in movie) {
       throw new FrozenValueConstraintViolation(
-          "The movie category must not be unset!");
+        "The movie category must not be unset!");
     }
     if (tvSeriesName && movie.tvSeriesName !== tvSeriesName) {
       movie.tvSeriesName = tvSeriesName;
@@ -569,7 +611,7 @@ Movie.update = function ({movieId, title, releaseDate, movieRating, movieGenre, 
     console.log("fino")
 
   } catch (e) {
-    console.log( `${e.constructor.name}: ${e.message}`);
+    console.log(`${e.constructor.name}: ${e.message}`);
     noConstraintViolated = false;
     // restore object to its state before updating
     Movie.instances[movieId] = objectBeforeUpdate;
@@ -577,73 +619,90 @@ Movie.update = function ({movieId, title, releaseDate, movieRating, movieGenre, 
   if (noConstraintViolated) {
     if (updatedProperties.length > 0) {
       let ending = updatedProperties.length > 1 ? "ies" : "y";
-      console.log( `Propert${ending} ${updatedProperties.toString()} modified for movie ${movieId}`);
+      console.log(`Propert${ending} ${updatedProperties.toString()} modified for movie ${movieId}`);
     } else {
-      console.log( `No property value changed for movie ${movie.movieId}!`);
+      console.log(`No property value changed for movie ${movie.movieId}!`);
     }
   }
 };
 /**
  *  Delete an existing Movie record/object
  */
-Movie.destroy = function (movieId) {
+Movie.destroy = function(movieId) {
   if (Movie.instances[movieId]) {
-    console.log( `${Movie.instances[movieId].toString()} deleted!`);
+    console.log(`${Movie.instances[movieId].toString()} deleted!`);
     delete Movie.instances[movieId];
   } else {
-    console.log( `There is no movie with movieId ${movieId} in the database!`);
+    console.log(`There is no movie with movieId ${movieId} in the database!`);
   }
 };
 /**
- *  Load all movie table rows and convert them to objects 
+ *  Load all movie table rows and convert them to objects
  *  Precondition: movie and people must be loaded first
  */
- Movie.retrieveAll = function () {
+Movie.retrieveAll = function() {
   var movies = {};
   try {
-        movies = JSON.parse( localStorage["movies"]);
-        console.log( `${Object.keys( movies).length} movies records loaded.`);
+    movies = JSON.parse(localStorage["movies"]);
+    console.log(`${Object.keys( movies).length} movies records loaded.`);
   } catch (e) {
-    alert( "Error when reading from Local Storage\n" + e);
+    alert("Error when reading from Local Storage\n" + e);
   }
-  for (let key of Object.keys( movies)) {
+  for (let key of Object.keys(movies)) {
     let movieId = movies[key].movieId,
-    title = movies[key].title,
-    releaseDate = movies[key].releaseDate,
-    movieRating = movies[key].movieRating,
-    movieGenre = movies[key].movieGenre,
-    director = movies[key].director,
-    actorsIdRefs = movies[key].actorsIdRefs;
+      title = movies[key].title,
+      releaseDate = movies[key].releaseDate,
+      movieRating = movies[key].movieRating,
+      movieGenre = movies[key].movieGenre,
+      director = movies[key].director,
+      actorsIdRefs = movies[key].actorsIdRefs;
     if (movies[key].movieType) {
       if (movies[key].movieType === MovieTypeEL.TVSERIESEPISODE) {
         let movieType = movies[key].movieType;
         let episodeNo = movies[key].episodeNo;
         let tvSeriesName = movies[key].tvSeriesName;
-        Movie.instances[key] = new Movie( {
-         movieId: movieId,
-         title: title,
-         releaseDate: releaseDate,
-         movieRating: movieRating,
-         movieGenre: movieGenre,
-         director: director,
-         actorIdRefs: actorsIdRefs,
-         movieType: movieType,
-         episodeNo: episodeNo,
-         tvSeriesName: tvSeriesName
-     });
-     } else {
-      let movieType = movies[key].movieType;
-      let about = movies[key].about;
-      Movie.instances[key] = new Movie( {movieId: movieId,title: title,releaseDate: releaseDate,movieRating: movieRating,movieGenre: movieGenre, director: director,actorIdRefs: actorsIdRefs,
-movieType: movieType, about: about});
-    }   // WATCH OUT THIS LINE!!! 
-    // Movie.instances[movieId] = movies[movieId];
+        Movie.instances[key] = new Movie({
+          movieId: movieId,
+          title: title,
+          releaseDate: releaseDate,
+          movieRating: movieRating,
+          movieGenre: movieGenre,
+          director: director,
+          actorIdRefs: actorsIdRefs,
+          movieType: movieType,
+          episodeNo: episodeNo,
+          tvSeriesName: tvSeriesName
+        });
+      } else {
+        let movieType = movies[key].movieType;
+        let about = movies[key].about;
+        Movie.instances[key] = new Movie({
+          movieId: movieId,
+          title: title,
+          releaseDate: releaseDate,
+          movieRating: movieRating,
+          movieGenre: movieGenre,
+          director: director,
+          actorIdRefs: actorsIdRefs,
+          movieType: movieType,
+          about: about
+        });
+      } // WATCH OUT THIS LINE!!!
+      // Movie.instances[movieId] = movies[movieId];
 
     } else {
-      Movie.instances[key] = new Movie( {movieId: movieId,title: title,releaseDate: releaseDate,movieRating: movieRating,movieGenre: movieGenre,director: director,actorIdRefs: actorsIdRefs});
+      Movie.instances[key] = new Movie({
+        movieId: movieId,
+        title: title,
+        releaseDate: releaseDate,
+        movieRating: movieRating,
+        movieGenre: movieGenre,
+        director: director,
+        actorIdRefs: actorsIdRefs
+      });
     }
+  };
 };
- };
 
 
 
@@ -652,12 +711,16 @@ movieType: movieType, about: about});
 /**
  *  Save all movie objects
  */
-Movie.saveAll = function () {
-  const nmrOfMovies = Object.keys( Movie.instances);
-  localStorage["movies"] = JSON.stringify( Movie.instances);
-  console.log( `${nmrOfMovies.lenght} movie records saved.`);
+Movie.saveAll = function() {
+  const nmrOfMovies = Object.keys(Movie.instances);
+  localStorage["movies"] = JSON.stringify(Movie.instances);
+  console.log(`${nmrOfMovies.lenght} movie records saved.`);
 };
 
 
 export default Movie;
-export { MovieRatingEL, GenreEL, MovieTypeEL };
+export {
+  MovieRatingEL,
+  GenreEL,
+  MovieTypeEL
+};
