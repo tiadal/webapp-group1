@@ -21,9 +21,9 @@ class Person {
   }) {
     this.personId = personId;
     this.name = name;
-    /*         this._directedMovies = {};  // changed!
-            this._playedMovies = {}; // changed!
-            this._aboutMovies = {}; // changed! */
+    this._directedMovies = {};  // changed!
+    this._playedMovies = {}; // changed!
+    this._aboutMovies = {}; // changed!
   }
   get personId() {
     return this._personId;
@@ -180,19 +180,19 @@ Person.update = function({
 
 Person.destroy = function(personId) {
   const person = Person.instances[personId];
-  /*         // delete ref all actors movie records
-          for (const movieId of Object.keys( person.playedMovies)) {
-            let movie = person.playedMovies[movieId];
-            if (movie.actors[personId]) delete movie.actors[personId];
-          }
+  // delete ref all actors movie records
+  for (const movieId of Object.keys( person.playedMovies)) {
+    let movie = person.playedMovies[movieId];
+    if (movie.actors[personId]) delete movie.actors[personId];
+  }
 
-          // delete all director movie records
-          for (const movieId of Object.keys( person.directedMovies)) {
-            delete Movie.instances[movieId];
-          }
-          for (const movieId of Object.keys( person.aboutMovies)) {
-            delete Movie.instances[movieId];
-          } */
+  // delete all director movie records
+  for (const movieId of Object.keys( person.directedMovies)) {
+    delete Movie.instances[movieId];
+  }
+  for (const movieId of Object.keys( person.aboutMovies)) {
+    delete Movie.instances[movieId];
+  }
 
   for (const key of Object.keys(Movie.instances)) {
     const movie = Movie.instances[key];
@@ -206,6 +206,7 @@ Person.destroy = function(personId) {
     }
     if (actIdArray.includes(personId)) {
       delete Movie.instances[movieId].actors[personId];
+      delete Actor.instances[personId]
       console.log(`Actors of Movie ${movie.movieId} changed.`);
       // console.log( `Movie ${movie.movieId} deleted.`);
     }
@@ -213,6 +214,7 @@ Person.destroy = function(personId) {
     let dirId = String(movie.director.personId);
     if (dirId === personId && movieId) {
       delete Movie.instances[movieId];
+      delete Director.instances[personId]
       console.log(`Movie ${movie.movieId} deleted.`);
     }
   };
@@ -249,12 +251,6 @@ Person.retrieveAll = function() {
   }
   console.log(`${Object.keys( people).length} people records loaded.`);
 };
-
-
-
-
-
-
 
 
 Person.saveAll = function() {

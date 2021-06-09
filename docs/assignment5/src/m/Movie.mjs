@@ -200,7 +200,7 @@ static movieId() {  //changed to static
     set director( p) {
     if (!p) {  // unset director
       // delete the corresponding inverse reference from Publisher::publishedBooks
-      delete this._director.directedMovies[ this._movieId];
+      //delete this._director.directedMovies[ this._movieId];
       // unset the publisher property
       delete this._director;
       // return new MandatoryValueConstraintViolation("The director must not be empty!");
@@ -211,12 +211,12 @@ static movieId() {  //changed to static
       if (validationResult instanceof NoConstraintViolation) {
         if (this._director) {
           // delete the obsolete inverse reference in Publisher::publishedBooks
-          delete this._director.directedMovies[ this._movieId];
+          //delete this._director.directedMovies[ this._movieId];
         }
         // create the new person reference
         this._director = Person.instances[ person_id];
         // automatically add the derived inverse reference
-        this._director.directedMovies[ this._movieId] = this;
+        //this._director.directedMovies[ this._movieId] = this;
       } else {
         throw validationResult;
       }
