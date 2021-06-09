@@ -4,12 +4,16 @@
 import Movie from "../m/Movie.mjs";
 import Person from "../m/Person.mjs";
 import { fillSelectWithOptions, createListFromMap } from "../../lib/util.mjs";
+import Actor from "../m/Actor.mjs";
+import Director from "../m/Director.mjs";
 
 /***************************************************************
  Load data
  ***************************************************************/
 Person.retrieveAll();
 Movie.retrieveAll();
+Actor.retrieveAll();
+Director.retrieveAll();
 
 /***************************************************************
  Set up general, use-case-independent UI elements
@@ -29,6 +33,8 @@ for (let frm of document.querySelectorAll("section > form")) {
 window.addEventListener("beforeunload", function () {
   Person.saveAll();
   Movie.saveAll();
+  Actor.saveAll();
+  Director.saveAll();
 });
 
 /**********************************************
@@ -36,8 +42,7 @@ window.addEventListener("beforeunload", function () {
  **********************************************/
 
 
-document.getElementById("retrieveAndListAll")
-  .addEventListener("click", function () {
+document.getElementById("retrieveAndListAll").addEventListener("click", function () {
     const tableBodyEl = document.querySelector("section#Person-R > table > tbody");
     tableBodyEl.innerHTML = "";
     for (let key of Object.keys( Person.instances)) {

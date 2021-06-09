@@ -51,15 +51,6 @@ document.getElementById("retrieveAndListAll").addEventListener("click", function
     row.insertCell().textContent = director.personId;
     row.insertCell().textContent = director.name;
     row.insertCell().textContent = director.agent;
-    /*        // create list of movies directed by this artist
-           const listEldirMovies = createListFromMap(person.directedMovies, "title");
-           row.insertCell().appendChild(listEldirMovies);
-           // create list of movies plyed by this artist
-           const listElplayMovies = createListFromMap(person.playedMovies, "title");
-           row.insertCell().appendChild(listElplayMovies);
-           // create list of movies about this artist
-           const listElaboutMovies = createListFromMap(person.aboutMovies, "title");
-           row.insertCell().appendChild(listElaboutMovies); */
   }
   document.getElementById("Director-M").style.display = "none";
   document.getElementById("Director-R").style.display = "block";

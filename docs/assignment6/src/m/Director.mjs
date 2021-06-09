@@ -42,6 +42,7 @@ Director.add = function(slots) {
   }
   if (director) {
     Director.instances[director.personId] = director;
+    //Person.instances[director.personId] = director;
     console.log(`Saved: ${director.name}`);
   }
 };

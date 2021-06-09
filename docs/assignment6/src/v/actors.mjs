@@ -50,16 +50,7 @@ document.getElementById("retrieveAndListAll").addEventListener("click", function
     const row = tableBodyEl.insertRow();
     row.insertCell().textContent = actor.personId;
     row.insertCell().textContent = actor.name;
-    row.insertCell().textContent = actor.agent;
-    /*        // create list of movies directed by this artist
-           const listEldirMovies = createListFromMap(person.directedMovies, "title");
-           row.insertCell().appendChild(listEldirMovies);
-           // create list of movies plyed by this artist
-           const listElplayMovies = createListFromMap(person.playedMovies, "title");
-           row.insertCell().appendChild(listElplayMovies);
-           // create list of movies about this artist
-           const listElaboutMovies = createListFromMap(person.aboutMovies, "title");
-           row.insertCell().appendChild(listElaboutMovies); */
+    row.insertCell().textContent = Person.instances[actor.agent].name;
   }
   document.getElementById("Actor-M").style.display = "none";
   document.getElementById("Actor-R").style.display = "block";

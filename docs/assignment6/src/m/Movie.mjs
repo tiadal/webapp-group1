@@ -246,12 +246,12 @@ class Movie {
       if (validationResult instanceof NoConstraintViolation) {
         if (this._director) {
           // delete the obsolete inverse reference in Publisher::publishedBooks
-          delete this._director.directedMovies[this._movieId];
+           delete this._director.directedMovies[this._movieId];
         }
         // create the new person reference
         this._director = Person.instances[person_id];
         // automatically add the derived inverse reference
-        /*         this._director.directedMovies[ this._movieId] = this; */
+        this._director.directedMovies[ this._movieId] = this;
       } else {
         throw validationResult;
       }
@@ -280,11 +280,10 @@ class Movie {
       // add the new author reference
       this._actors[person_id] = Person.instances[person_id];
       // automatically add the derived inverse reference
-      /*       this._actors[person_id].playedMovies[this._movieId] = this; */
-
-      /*       // add the new author reference
-            const key = String( person_id);
-            this._actors[key] = Person.instances[ key]; */
+      this._actors[person_id].playedMovies[this._movieId] = this;
+      // add the new author reference
+      const key = String( person_id);
+      this._actors[key] = Person.instances[ key]; 
     } else {
       throw validationResult;
     }
@@ -295,7 +294,7 @@ class Movie {
     const validationResult = Movie.checkActor(person_id);
     if (validationResult instanceof NoConstraintViolation) {
       // automatically delete the derived inverse reference
-      delete this._actors[person_id].playedMovies[this._movieId];
+       delete this._actors[person_id].playedMovies[this._movieId];
       // delete the author reference
       delete this._actors[person_id];
     } else {
@@ -445,7 +444,7 @@ class Movie {
         // create the new person reference
         this._about = Person.instances[person_id];
         // automatically add the derived inverse reference
-        /*         this._about.aboutMovies[ this._movieId] = this; */
+        this._about.aboutMovies[ this._movieId] = this;
       } else {
         throw validationResult;
       }
@@ -582,14 +581,14 @@ Movie.update = function({
     }
     // new
     if (movieType) {
-      console.log(movieType)
-      console.log(movie.movieType)
       if (movie.movieType === undefined) {
         movie.movieType = movieType;
         updatedProperties.push("movieType");
       } else if (movieType != movie.movieType) {
+        window.alert(message);
         throw new FrozenValueConstraintViolation(
           "The movieType must not be changed!");
+
       }
     } else if (movieType === "" && "movieType" in movie) {
       throw new FrozenValueConstraintViolation(
@@ -603,12 +602,10 @@ Movie.update = function({
       movie.episodeNo = episodeNo;
       updatedProperties.push("episodeNo");
     }
-    console.log(about)
     if (about && movie.about !== about) {
       movie.about = about;
       updatedProperties.push("about");
     }
-    console.log("fino")
 
   } catch (e) {
     console.log(`${e.constructor.name}: ${e.message}`);

@@ -51,6 +51,7 @@ Actor.add = function(slots) {
   }
   if (actor) {
     Actor.instances[actor.personId] = actor;
+    //Person.instances[actor.personId] = actor;
     console.log(`Saved: ${actor.name}`);
   }
 };

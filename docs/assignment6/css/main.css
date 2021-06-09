@@ -163,7 +163,7 @@ nav > ul > li > a {
     display: inline-block;
     vertical-align: top;
     /* style */
-    font-size: 1.5rem;
+    font-size: 1rem;
     color: white;
     text-decoration: none;
 }
@@ -530,6 +530,11 @@ form div.MultiChoiceWidget > ul > li.added {
         background-color: #f5f5f5;
         border-radius: 4px;
         margin: 0 0 1rem 0;
+    }
+    nav > ul > li > a {
+        /* position */
+        /* style */
+        font-size: 1.5rem;
     }
 
 }
